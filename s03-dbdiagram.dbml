@@ -1,0 +1,29 @@
+Table personnes {
+  nom_complet varchar
+  age int
+  residence float
+  photo blob
+}
+
+Table films {
+  nom_film varchar
+  duree time
+  realisateur varchar
+  resume blob
+  affiche blob
+}
+
+Table statistiques {
+  nom_film varchar
+  realisateur varchar
+  nom_pays varchar
+  ventes_pays int
+  geoloc_pays float
+  ventes_monde int
+  nb_salles int
+  selection_oscars boolean
+}
+
+Ref: films.realisateur > personnes.nom_complet
+Ref: statistiques.nom_film > films.nom_film
+Ref: statistiques.realisateur > personnes.nom_complet
