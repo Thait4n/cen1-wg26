@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S02 – Requête Wikidata : documentaires français</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #222; line-height: 1.5; }
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.2rem; margin-top: 2rem; }
+  pre { background: #f2f2f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+  iframe { width: 100%; height: 600px; border: 1px solid #ccc; border-radius: 6px; }
+  .note { color: #555; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<h1>Documentaires français avec affiche</h1>
+<p>Séance 2 – La récolte de données. Requête SPARQL sur <a href="https://query.wikidata.org/">Wikidata</a> pour récupérer des films documentaires d'origine française qui ont une affiche, avec leur réalisateur et leur date de sortie.</p>
+
+<h2>Code SPARQL</h2>
+<pre id="sparql">#defaultView:ImageGrid
+SELECT DISTINCT ?film ?filmLabel ?film_poster ?directorLabel ?date WHERE {
+  ?film wdt:P31 wd:Q11424;
+    wdt:P136 wd:Q93204;
+    wdt:P495 wd:Q142;
+    wdt:P3383 ?film_poster.
+  OPTIONAL { ?film wdt:P57 ?director. }
+  OPTIONAL { ?film wdt:P577 ?date. }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],fr,en". }
+}
+LIMIT 100</pre>
+
+<p class="note">
+  P31 = nature de l'élément, Q11424 = film · P136 = genre, Q93204 = film documentaire ·
+  P495 = pays d'origine, Q142 = France · P3383 = affiche · P57 = réalisateur · P577 = date de publication.
+</p>
+
+<h2>Aperçu visuel des données</h2>
+<iframe id="apercu" title="Résultat de la requête Wikidata" loading="lazy"></iframe>
+<p><a id="lien" href="#" target="_blank" rel="noopener">Ouvrir la requête dans Wikidata Query Service</a></p>
+
+<script>
+  // Le code SPARQL affiché plus haut sert aussi à générer l'aperçu : une seule source.
+  var requete = document.getElementById('sparql').textContent;
+  document.getElementById('apercu').src = 'https://query.wikidata.org/embed.html#' + encodeURIComponent(requete);
+  document.getElementById('lien').href = 'https://query.wikidata.org/#' + encodeURIComponent(requete);
+</script>
+
+</body>
+</html>
