@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S03 – Design de base de données</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; color: #222; line-height: 1.5; }
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.2rem; margin-top: 2rem; }
+  pre { background: #f2f2f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+  svg { width: 100%; height: auto; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; }
+  table { border-collapse: collapse; }
+  td, th { border: 1px solid #ccc; padding: 4px 10px; text-align: left; }
+</style>
+</head>
+<body>
+
+<h1>Séance 3 – Design de base de données</h1>
+<p>Exercice 3.4 : modélisation de trois tableaux liés – <strong>personnes</strong>, <strong>films</strong> et <strong>statistiques</strong> – avec <a href="https://dbdiagram.io/d">dbdiagram.io</a>.</p>
+
+<h2>Schéma</h2>
+<svg viewBox="0 0 820 340" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="12">
+  <!-- liens -->
+  <g fill="none" stroke="#9aa7b5" stroke-width="1.5">
+    <path d="M300 290 H280 V106 H260"/>
+    <path d="M580 82 H545 V242 H520"/>
+    <path d="M580 106 H260"/>
+  </g>
+
+  <!-- personnes -->
+  <g transform="translate(40,64)">
+    <rect width="220" height="126" fill="#fff" stroke="#d5dbe1"/>
+    <rect width="220" height="30" fill="#2f6291"/>
+    <text x="10" y="20" fill="#fff" font-weight="bold">personnes</text>
+    <g fill="#333">
+      <text x="10" y="47">nom_complet</text><text x="210" y="47" text-anchor="end" fill="#999">varchar</text>
+      <text x="10" y="71">age</text><text x="210" y="71" text-anchor="end" fill="#999">int</text>
+      <text x="10" y="95">residence</text><text x="210" y="95" text-anchor="end" fill="#999">float</text>
+      <text x="10" y="119">photo</text><text x="210" y="119" text-anchor="end" fill="#999">blob</text>
+    </g>
+  </g>
+
+  <!-- films -->
+  <g transform="translate(300,200)">
+    <rect width="220" height="150" fill="#fff" stroke="#d5dbe1"/>
+    <rect width="220" height="30" fill="#2f6291"/>
+    <text x="10" y="20" fill="#fff" font-weight="bold">films</text>
+    <g fill="#333">
+      <text x="10" y="47">nom_film</text><text x="210" y="47" text-anchor="end" fill="#999">varchar</text>
+      <text x="10" y="71">duree</text><text x="210" y="71" text-anchor="end" fill="#999">time</text>
+      <text x="10" y="95">realisateur</text><text x="210" y="95" text-anchor="end" fill="#999">varchar</text>
+      <text x="10" y="119">resume</text><text x="210" y="119" text-anchor="end" fill="#999">blob</text>
+      <text x="10" y="143">affiche</text><text x="210" y="143" text-anchor="end" fill="#999">blob</text>
+    </g>
+  </g>
+
+  <!-- statistiques -->
+  <g transform="translate(580,40)">
+    <rect width="220" height="222" fill="#fff" stroke="#d5dbe1"/>
+    <rect width="220" height="30" fill="#2f6291"/>
+    <text x="10" y="20" fill="#fff" font-weight="bold">statistiques</text>
+    <g fill="#333">
+      <text x="10" y="47">nom_film</text><text x="210" y="47" text-anchor="end" fill="#999">varchar</text>
+      <text x="10" y="71">realisateur</text><text x="210" y="71" text-anchor="end" fill="#999">varchar</text>
+      <text x="10" y="95">nom_pays</text><text x="210" y="95" text-anchor="end" fill="#999">varchar</text>
+      <text x="10" y="119">ventes_pays</text><text x="210" y="119" text-anchor="end" fill="#999">int</text>
+      <text x="10" y="143">geoloc_pays</text><text x="210" y="143" text-anchor="end" fill="#999">float</text>
+      <text x="10" y="167">ventes_monde</text><text x="210" y="167" text-anchor="end" fill="#999">int</text>
+      <text x="10" y="191">nb_salles</text><text x="210" y="191" text-anchor="end" fill="#999">int</text>
+      <text x="10" y="215">selection_oscars</text><text x="210" y="215" text-anchor="end" fill="#999">boolean</text>
+    </g>
+  </g>
+</svg>
+
+<h2>Relations</h2>
+<table>
+  <tr><th>Champ</th><th>Référence</th><th>Sens</th></tr>
+  <tr><td>films.realisateur</td><td>personnes.nom_complet</td><td>un réalisateur peut avoir plusieurs films</td></tr>
+  <tr><td>statistiques.nom_film</td><td>films.nom_film</td><td>un film a plusieurs lignes de stats (une par pays)</td></tr>
+  <tr><td>statistiques.realisateur</td><td>personnes.nom_complet</td><td>idem, côté réalisateur</td></tr>
+</table>
+
+<h2>Code dbdiagram</h2>
+<pre>Table personnes {
+  nom_complet varchar
+  age int
+  residence float
+  photo blob
+}
+
+Table films {
+  nom_film varchar
+  duree time
+  realisateur varchar
+  resume blob
+  affiche blob
+}
+
+Table statistiques {
+  nom_film varchar
+  realisateur varchar
+  nom_pays varchar
+  ventes_pays int
+  geoloc_pays float
+  ventes_monde int
+  nb_salles int
+  selection_oscars boolean
+}
+
+Ref: films.realisateur &gt; personnes.nom_complet
+Ref: statistiques.nom_film &gt; films.nom_film
+Ref: statistiques.realisateur &gt; personnes.nom_complet</pre>
+
+<p>Fichier du code : <a href="s03-dbdiagram.dbml">s03-dbdiagram.dbml</a></p>
+
+</body>
+</html>
